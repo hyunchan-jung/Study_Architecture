@@ -1,0 +1,34 @@
+---
+- name: Install APT packages
+  apt:
+    name: ['curl', 'ca-certificates', 'gnupg', 'lsb-release']
+    state: present
+
+- name: Add docker apt-key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker apt-repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_release }} stable"
+    state: present
+    filename: docker
+    update_cache: yes
+
+- name: Install docker
+  apt:
+    name: ['docker-ce={{ docker_version }}', 'docker-ce-cli={{ docker_version }}', 'docker-compose-plugin']
+    state: present
+
+- name: Add user to docker group
+  user:
+    name: '{{ docker_default_user }}'
+    groups: docker
+    append: yes
+
+- name: Enable and start docker service
+  service:
+    name: docker
+    enabled: true
+    state: started

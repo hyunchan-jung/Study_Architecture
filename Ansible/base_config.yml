@@ -1,0 +1,7 @@
+---
+- name: Configure all servers
+  hosts: all
+  become: true
+
+  roles:
+    - { role: docker, tags: [ 'docker' ] }
