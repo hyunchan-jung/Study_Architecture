@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  N = 3 # Number of vm hosts
+
+  (1..N).each do |i|
+    config.vm.define "node-0#{i}" do |cfg|
+      cfg.vm.box = "ubuntu/focal64"  # Ubuntu 20.04 LTS Focal
+      cfg.vm.provider "virtualbox" do |vb|
+        vb.name = "node-0#{i}"
+        vb.cpus = 2
+        vb.memory = 2048
+      end
+      cfg.vm.host_name = "node-0#{i}"
+      cfg.vm.network "private_network", ip: "192.168.57.10#{i}"
+      cfg.vm.network "forwarded_port", guest: 22, host: "6100#{i}", auto_correct: true, id: "ssh"
+    end
+
+  end
+
+end
