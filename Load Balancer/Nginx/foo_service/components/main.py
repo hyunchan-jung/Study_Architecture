@@ -1,8 +1,8 @@
-import socket
+import os
 
 
 def some_business_logic():
-    host = socket.gethostname()
+    host = os.environ.get('HOSTNAME')
     return {
-        'ip': socket.gethostbyname(host),
+        'host': host
     }

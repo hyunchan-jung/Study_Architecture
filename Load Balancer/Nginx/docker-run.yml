@@ -1,0 +1,39 @@
+- name: Pull foo-service image
+  hosts: all
+  tasks:
+    - command: docker pull 192.168.0.12:5000/foo-service
+
+- name: Run foo-service container
+  hosts: all
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name foo-service
+        --publish 8000:8000
+        --volume "/Study_Architecture/Load Balancer/Nginx/foo_service/components:/workspace/components"
+        --env HOSTNAME={{ inventory_hostname }}
+        192.168.0.12:5000/foo-service
+      when: container_info.container is none
+
+- name: Run Nginx container
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: nginx
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name nginx
+        --publish 7000:7000
+        --volume "/Study_Architecture/Load Balancer/Nginx/nginx_conf/foo_service.conf:/etc/nginx/conf.d/foo_service.conf"
+        nginx:1.22.1
+      when: container_info.container is none

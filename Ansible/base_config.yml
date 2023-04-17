@@ -5,3 +5,4 @@
 
   roles:
     - { role: docker, tags: [ 'docker' ] }
+    - { role: docker-registry, tags: [ 'docker-registry' ] }

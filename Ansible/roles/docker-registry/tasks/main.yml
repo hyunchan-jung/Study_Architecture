@@ -1,0 +1,11 @@
+---
+- name: Create daemon.json
+  copy:
+    content: |
+      {
+        "insecure-registries": ["192.168.0.12:5000"]
+      }
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+  notify:
+    - restart docker
