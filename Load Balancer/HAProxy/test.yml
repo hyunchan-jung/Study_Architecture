@@ -1,0 +1,8 @@
+- name: Testing service
+  hosts: node-01
+  tasks:
+    - shell: seq 100 | xargs -I{} curl localhost:7000/api/v1/call
+      register: result
+
+    - debug:
+        var: result.stdout

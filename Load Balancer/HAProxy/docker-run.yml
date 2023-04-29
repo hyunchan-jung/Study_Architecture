@@ -1,0 +1,39 @@
+- name: Pull foo-service image
+  hosts: all
+  tasks:
+    - command: docker pull 192.168.0.12:5000/foo-service
+
+- name: Run foo-service container
+  hosts: all
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name foo-service
+        --publish 8000:8000
+        --volume "/Study_Architecture/Load Balancer/HAProxy/foo_service/components:/workspace/components"
+        --env HOSTNAME={{ inventory_hostname }}
+        192.168.0.12:5000/foo-service
+      when: container_info.container is none
+
+- name: Run HAProxy container
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: haproxy
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name haproxy
+        --publish 7000:7000
+        --volume "/Study_Architecture/Load Balancer/HAProxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+        haproxy:2.7
+      when: container_info.container is none
