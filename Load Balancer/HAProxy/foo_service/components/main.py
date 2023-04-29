@@ -6,3 +6,11 @@ def some_business_logic():
     return {
         'host': host
     }
+
+
+def startup():
+    return
+
+
+def shutdown():
+    return

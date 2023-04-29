@@ -1,7 +1,7 @@
 - name: Testing service
   hosts: node-01
   tasks:
-    - shell: seq 100 | xargs -I{} curl localhost:7000
+    - shell: seq 100 | xargs -I{} curl localhost:8000
       register: result
 
     - debug:
