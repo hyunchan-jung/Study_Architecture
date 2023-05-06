@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  consul:
+    image: consul:1.15
+    container_name: consul
+    restart: always
+    ports:
+      - 8500:8500

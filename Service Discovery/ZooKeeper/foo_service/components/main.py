@@ -14,7 +14,7 @@ zk = KazooClient(hosts='192.168.0.12:2181')
 zk.start()
 
 
-def call(service_name: str) -> None:
+def call(service_name: str):
     path = '/' + service_name
     services = zk.get_children(path)
 

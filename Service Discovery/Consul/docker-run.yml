@@ -1,0 +1,48 @@
+- name: Pull foo-service image
+  hosts: all
+  tasks:
+    - command: docker pull 192.168.0.12:5000/foo-service
+
+- name: Run Service Discovery caller
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name foo-service
+        --publish 8000:8000
+        --volume "/Study_Architecture/Service Discovery/Consul/foo_service/components:/workspace/components"
+        --env HOSTNAME={{ inventory_hostname }}
+        --env HOST={{ ansible_host }}
+        --env ROLE=caller
+        192.168.0.12:5000/foo-service \
+        /bin/sh -c "pip install -r /workspace/components/requirements.txt && uvicorn main:app --host=0.0.0.0 --port=8000"
+      when: container_info.container is none
+
+- name: Run Service Discovery callee
+  hosts:
+    - node-02
+    - node-03
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name foo-service
+        --publish 8000:8000
+        --volume "/Study_Architecture/Service Discovery/Consul/foo_service/components:/workspace/components"
+        --env HOSTNAME={{ inventory_hostname }}
+        --env HOST={{ ansible_host }}
+        --env ROLE=callee
+        192.168.0.12:5000/foo-service \
+        /bin/sh -c "pip install -r /workspace/components/requirements.txt && uvicorn main:app --host=0.0.0.0 --port=8000"
+      when: container_info.container is none

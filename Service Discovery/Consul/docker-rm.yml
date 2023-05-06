@@ -1,0 +1,9 @@
+- name: Remove foo-service container
+  hosts: all
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: docker rm --force foo-service
+      when: container_info.container is not none
