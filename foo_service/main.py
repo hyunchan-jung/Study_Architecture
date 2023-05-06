@@ -19,3 +19,8 @@ def shutdown_event():
 async def main():
     results = some_business_logic()
     return results
+
+
+@app.get('/health')
+async def health_check():
+    return {'message': 'OK'}
