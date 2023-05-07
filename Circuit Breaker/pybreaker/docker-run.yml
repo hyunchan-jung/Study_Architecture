@@ -1,0 +1,22 @@
+- name: Pull foo-service image
+  hosts: all
+  tasks:
+    - command: docker pull 192.168.0.12:5000/foo-service
+
+- name: Run Circuit Breaker
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: foo-service
+      register: container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name foo-service
+        --publish 8000:8000
+        --volume "/Study_Architecture/Circuit Breaker/pybreaker/foo_service/components:/workspace/components"
+        192.168.0.12:5000/foo-service \
+        /bin/sh -c "pip install -r /workspace/components/requirements.txt && uvicorn main:app --host=0.0.0.0 --port=8000"
+      when: container_info.container is none

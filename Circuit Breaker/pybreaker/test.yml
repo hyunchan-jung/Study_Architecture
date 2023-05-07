@@ -1,0 +1,8 @@
+- name: Testing service
+  hosts: node-01
+  tasks:
+    - shell: curl localhost:8000
+      register: result
+
+    - debug:
+        var: result.stdout
