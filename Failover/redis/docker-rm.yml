@@ -1,0 +1,16 @@
+- name: Remove redis-server, redis-sentinel container
+  hosts: all
+  tasks:
+    - docker_container_info:
+        name: redis
+      register: redis_container_info
+
+    - docker_container_info:
+        name: redis-sentinel
+      register: sentinel_container_info
+
+    - command: docker rm --force redis
+      when: redis_container_info.container is not none
+
+    - command: docker rm --force redis-sentinel
+      when: sentinel_container_info.container is not none

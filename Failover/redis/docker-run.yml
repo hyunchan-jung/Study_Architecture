@@ -1,0 +1,36 @@
+- name: Run redis-server, redis-sentinel
+  hosts: all
+  tasks:
+    - shell: python3 /Study_Architecture/Failover/redis/conf.py {{ inventory_hostname }}
+
+    - docker_container_info:
+        name: redis
+      register: redis_container_info
+
+    - docker_container_info:
+        name: redis-sentinel
+      register: sentinel_container_info
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name redis
+        --user root
+        --publish 6379:6379
+        --volume /tmp/redis.conf:/usr/local/etc/redis/redis.conf
+        redis:7.0
+        redis-server /usr/local/etc/redis/redis.conf
+      when: redis_container_info.container is none
+
+    - command: >
+        docker run
+        --detach
+        --restart always
+        --name redis-sentinel
+        --user root
+        --publish 26379:26379
+        --volume /tmp/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+        redis:7.0
+        redis-sentinel /usr/local/etc/redis/sentinel.conf
+      when: sentinel_container_info.container is none
