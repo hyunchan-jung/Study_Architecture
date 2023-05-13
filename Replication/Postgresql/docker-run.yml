@@ -1,0 +1,60 @@
+- name: Run PGPool container
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: pgpool
+      register: pgpool_container_info
+
+    - command: >
+        docker compose
+        -f /Study_Architecture/Replication/Postgresql/pool/docker-compose.yml
+        up -d
+      when: pgpool_container_info.container is none
+
+- name: Run Postgresql primary container
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: postgres
+      register: postgres_container_info
+
+    - command: >
+        docker compose
+        -f /Study_Architecture/Replication/Postgresql/primary/docker-compose.yml
+        up -d
+      when: postgres_container_info.container is none
+
+    - command:
+        cmd: |
+          docker exec postgres /bin/su postgres -c '
+            until pg_isready
+            do
+              sleep 1
+            done
+            psql -U postgres -a -f /scripts/init-script.sql
+          '
+      when: postgres_container_info.container is none
+
+- name: Run Postgresql secondary container
+  hosts: node-02
+  tasks:
+    - docker_container_info:
+        name: postgres
+      register: postgres_container_info
+
+    - shell: |
+        export SLOT_NUMBER=1
+        docker compose -f /Study_Architecture/Replication/Postgresql/secondary/docker-compose.yml up -d
+      when: postgres_container_info.container is none
+
+- name: Run Postgresql secondary container
+  hosts: node-03
+  tasks:
+    - docker_container_info:
+        name: postgres
+      register: postgres_container_info
+
+    - shell: |
+        export SLOT_NUMBER=2
+        docker compose -f /Study_Architecture/Replication/Postgresql/secondary/docker-compose.yml up -d
+      when: postgres_container_info.container is none

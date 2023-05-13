@@ -1,0 +1,19 @@
+- name: Remove container
+  hosts: all
+  tasks:
+    - docker_container_info:
+        name: postgres
+      register: container_info
+
+    - command: docker rm --force postgres
+      when: container_info.container is not none
+
+- name: Remove PGPool container
+  hosts: node-01
+  tasks:
+    - docker_container_info:
+        name: pgpool
+      register: container_info
+
+    - command: docker rm --force pgpool
+      when: container_info.container is not none

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:10.0-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - SLOT_NUMBER=${SLOT_NUMBER}
+    volumes:
+      - /Study_Architecture/Replication/Postgresql/secondary/postgresql.conf:/var/config/postgresql.conf
+      - /Study_Architecture/Replication/Postgresql/secondary/recovery.conf:/var/config/recovery.conf
+    command: >
+      /bin/sh -c '
+        until pg_isready -h 192.168.57.101
+        do
+          sleep 1
+        done
+
+        PGPASSWORD=postgres pg_basebackup -h 192.168.57.101 -D /var/lib/postgresql/data -U repuser -vP
+
+        cp /var/config/postgresql.conf /var/lib/postgresql/data/postgresql.conf
+        cp /var/config/recovery.conf /var/lib/postgresql/data/recovery.conf
+
+        echo "primary_slot_name = 'replica_${SLOT_NUMBER}_slot'" >> /var/lib/postgresql/data/recovery.conf
+
+        exec docker-entrypoint.sh postgres
+      '
+    ports:
+      - 5432:5432
