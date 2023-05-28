@@ -1,16 +1,18 @@
-## Install Vagrant
+# Install Vagrant
+
 - [download](https://developer.hashicorp.com/vagrant/downloads)
 - [compatible with VirtualBox](https://developer.hashicorp.com/vagrant/docs/providers/virtualbox)
 
-### Install VirtualBox
+## Install VirtualBox
+
 1. [download virtualbox deb file](https://www.virtualbox.org/wiki/Download_Old_Builds_6_1)
 2. `sudo dpkg -i virtualbox.deb`
 
+## Version
 
-### Version
 2.3.4
 
-### Insatll with APT Package manager
+## Insatll with APT Package manager
 
 ```bash
 sudo apt-get update
@@ -23,7 +25,8 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install vagrant
 ```
 
-### CLI Examples
+## CLI Examples
+
 - box
   - list
   - remove

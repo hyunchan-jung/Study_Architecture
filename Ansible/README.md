@@ -1,6 +1,6 @@
-## Install Ansible
+# Install Ansible
 
-### Insatll with PYPI
+## Insatll with PYPI
 
 ```bash
 sudo apt-get update
@@ -10,13 +10,17 @@ python3.9 -m pip install -U pip
 python3.9 -m pip install ansible==7.4.0
 ```
 
-## Register ssh key
+## Post install Ansible
+
+### Register ssh key
+
 ```bash
 ssh-keygen -t rsa
 ssh-copy-id <remote-host-user>@<remote-host-ip>
 ```
 
-## Ping test
+### Ping test
+
 ```bash
 ansible -i hosts.ini -m ping all
 ```
